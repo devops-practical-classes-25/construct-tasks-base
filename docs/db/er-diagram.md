@@ -2,7 +2,7 @@
 
 ```mermaid
 erDiagram
-    CatEntity {
+    cats {
         int id PK "Primary Key"
         string name "Name of the cat"
         int age "Age of the cat"
