@@ -39,6 +39,15 @@ export class CatsService {
 
   async update(id: number, updateDto: UpdateCatDto): Promise<CatEntity> {
     const cat = await this.findOne(id);
+  
+    // Проверка на дубликат по имени
+    if (updateDto.name) {
+      const existingCat = await this.catRepository.findOneBy({ name: updateDto.name });
+      if (existingCat && existingCat.id !== id) {
+        throw new ConflictException(`Кошка с именем "${updateDto.name}" уже существует.`);
+      }
+    }
+  
     const updated = Object.assign(cat, updateDto);
     return this.catRepository.save(updated);
   }

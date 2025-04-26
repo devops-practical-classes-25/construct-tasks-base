@@ -15,7 +15,13 @@ import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './interfaces/cat.interface';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiResponse,
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
 import { CreateCatSchema } from './schemas/create-cat.schema';
 import { CatSchema } from './schemas/cat.schema';
 
@@ -27,20 +33,26 @@ export class CatsController {
 
   @Post()
   @HttpCode(201)
+  @ApiOperation({ summary: 'Create a new cat' })
   @ApiBody({ type: CreateCatSchema })
   @ApiResponse({
     status: 201,
     description: 'The cat has been successfully created.',
     type: CatSchema,
   })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict - Cat with this name already exists',
+  })
   async create(@Body() createCatDto: CreateCatDto): Promise<CatSchema> {
     return this.catsService.create(createCatDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all cats' })
   @ApiResponse({
     status: 200,
-    description: 'The cats have been successfully retrieved.',
+    description: 'Successfully retrieved all cats',
     type: CatSchema,
     isArray: true,
   })
@@ -49,11 +61,14 @@ export class CatsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get cat by ID' })
+  @ApiParam({ name: 'id', type: Number, description: 'Cat ID' })
   @ApiResponse({
     status: 200,
-    description: 'The found cat.',
+    description: 'Successfully retrieved the cat',
     type: CatSchema,
   })
+  @ApiResponse({ status: 404, description: 'Cat not found' })
   async findOne(
     @Param('id', new ParseIntPipe())
     id: number,
@@ -63,10 +78,13 @@ export class CatsController {
 
   @Delete(':id')
   @HttpCode(204)
+  @ApiOperation({ summary: 'Delete a cat' })
+  @ApiParam({ name: 'id', type: Number, description: 'Cat ID' })
   @ApiResponse({
     status: 204,
-    description: 'The cat has been successfully deleted.',
+    description: 'Successfully deleted the cat',
   })
+  @ApiResponse({ status: 404, description: 'Cat not found' })
   async delete(
     @Param('id', new ParseIntPipe())
     id: number,
@@ -75,12 +93,16 @@ export class CatsController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update cat information' })
+  @ApiParam({ name: 'id', type: Number, description: 'Cat ID' })
   @ApiBody({ type: UpdateCatDto })
   @ApiResponse({
     status: 200,
-    description: 'The cat has been successfully updated.',
+    description: 'Successfully updated the cat',
     type: CatSchema,
   })
+  @ApiResponse({ status: 404, description: 'Cat not found' })
+  @ApiResponse({ status: 409, description: 'Conflict - Duplicate cat name' })
   async update(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateCatDto: UpdateCatDto,
