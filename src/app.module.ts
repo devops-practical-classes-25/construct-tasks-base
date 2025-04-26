@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CatsModule } from './cats/cats.module';
 import { CoreModule } from './core/core.module';
 import { ConfigModule } from '@nestjs/config';
-
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,7 +20,8 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: Boolean(process.env.SYNCHRONIZE_DB),
     }),
     CoreModule,
-    CatsModule
+    CatsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

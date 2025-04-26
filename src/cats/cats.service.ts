@@ -3,20 +3,44 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CatEntity } from './entities/cat.entity';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class CatsService {
   constructor(
     @InjectRepository(CatEntity)
     private readonly catRepository: Repository<CatEntity>,
+
+    @InjectRepository(UserEntity) 
+    private readonly userRepository: Repository<UserEntity>, // для поиска пользователей
   ) {}
 
-  async create(cat: Partial<CatEntity>): Promise<CatEntity> {
-    const existing = await this.catRepository.findOneBy({ name: cat.name });
+  async create(createCatDto: CreateCatDto): Promise<CatEntity> {
+    const existing = await this.catRepository.findOne({
+      where: {
+        name: createCatDto.name,
+        age: createCatDto.age,
+        breed: createCatDto.breed,
+      },
+    });
+
     if (existing) {
-      throw new ConflictException(`Кошка с именем "${cat.name}" уже существует.`);
+      throw new ConflictException('Кошка с такими данными уже существует.');
     }
-    const newCat = this.catRepository.create(cat);
+
+    const owner = await this.userRepository.findOneBy({ id: createCatDto.ownerId });
+    if (!owner) {
+      throw new NotFoundException(`Пользователь с id=${createCatDto.ownerId} не найден.`);
+    }
+
+    const newCat = this.catRepository.create({
+      name: createCatDto.name,
+      age: createCatDto.age,
+      breed: createCatDto.breed,
+      owner: owner, // привязываем найденного пользователя
+    });
+
     return this.catRepository.save(newCat);
   }
 
@@ -39,12 +63,18 @@ export class CatsService {
 
   async update(id: number, updateDto: UpdateCatDto): Promise<CatEntity> {
     const cat = await this.findOne(id);
+
+    if (updateDto.name || updateDto.age || updateDto.breed) {
+      const existingCat = await this.catRepository.findOne({
+        where: {
+          name: updateDto.name ?? cat.name,
+          age: updateDto.age ?? cat.age,
+          breed: updateDto.breed ?? cat.breed,
+        },
+      });
   
-    // Проверка на дубликат по имени
-    if (updateDto.name) {
-      const existingCat = await this.catRepository.findOneBy({ name: updateDto.name });
       if (existingCat && existingCat.id !== id) {
-        throw new ConflictException(`Кошка с именем "${updateDto.name}" уже существует.`);
+        throw new ConflictException('Кошка с такими данными уже существует.');
       }
     }
   
