@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CatsModule } from './cats/cats.module';
 import { CoreModule } from './core/core.module';
 import { ConfigModule } from '@nestjs/config';
+import { config } from './config';
 
 @Module({
   imports: [
@@ -11,13 +12,13 @@ import { ConfigModule } from '@nestjs/config';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT, 10),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
+      host: config.POSTGRES_HOST,
+      port: config.POSTGRES_PORT,
+      username: config.POSTGRES_USER,
+      password: config.POSTGRES_PASSWORD,
+      database: config.POSTGRES_DB,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: Boolean(process.env.SYNCHRONIZE_DB),
+      synchronize: config.SYNCHRONIZE_DB,
     }),
     CoreModule,
     CatsModule

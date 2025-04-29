@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: cats-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,8 +23,8 @@ services:
       - db
 
   db:
+    container_name: cats-db
     image: postgres
-    container_name: postgres-db
     ports:
       - "${POSTGRES_PORT}:5432"
     environment:
@@ -31,11 +32,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+       - cats-postgres-data:/var/lib/postgresql/data
 
   pgadmin:
+    container_name: cats-pgadmin
     image: dpage/pgadmin4
-    container_name: pgadmin
     ports:
       - "5050:80"
     environment:
@@ -44,8 +45,8 @@ services:
     depends_on:
       - db
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - cats-pgadmin-data:/var/lib/pgadmin
 
 volumes:
-  postgres_data:
-  pgadmin_data:
+  cats-postgres-data:
+  cats-pgadmin-data:

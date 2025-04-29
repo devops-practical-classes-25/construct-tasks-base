@@ -40,15 +40,21 @@ export class CatsService {
   async update(id: number, updateDto: UpdateCatDto): Promise<CatEntity> {
     const cat = await this.findOne(id);
   
-    // Проверка на дубликат по имени
     if (updateDto.name) {
-      const existingCat = await this.catRepository.findOneBy({ name: updateDto.name });
-      if (existingCat && existingCat.id !== id) {
+      const existingCat = await this.catRepository
+        .createQueryBuilder('cat')
+        .where('LOWER(cat.name) = LOWER(:name)', { name: updateDto.name })
+        .andWhere('cat.id != :id', { id })
+        .getOne();
+  
+      if (existingCat) {
         throw new ConflictException(`Кошка с именем "${updateDto.name}" уже существует.`);
       }
     }
   
-    const updated = Object.assign(cat, updateDto);
-    return this.catRepository.save(updated);
+    Object.assign(cat, updateDto);
+    await this.catRepository.save(cat);
+    
+    return this.catRepository.findOneBy({ id });
   }
 }

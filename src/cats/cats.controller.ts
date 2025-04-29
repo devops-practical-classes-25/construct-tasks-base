@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -73,7 +74,13 @@ export class CatsController {
     @Param('id', new ParseIntPipe())
     id: number,
   ): Promise<Cat> {
-    return this.catsService.findOne(id);
+    const cat = await this.catsService.findOne(id);
+
+    if (!cat) {
+      throw new NotFoundException(`Cat with id: ${id} was not found`);
+    }
+
+    return cat; 
   }
 
   @Delete(':id')
