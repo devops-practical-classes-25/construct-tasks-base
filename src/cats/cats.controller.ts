@@ -77,7 +77,7 @@ export class CatsController {
     const cat = await this.catsService.findOne(id);
 
     if (!cat) {
-      throw new NotFoundException(`Cat with id: ${id} was not found`);
+      throw new NotFoundException(`Кошка с id=${id} не найдена`);
     }
 
     return cat; 
@@ -92,10 +92,11 @@ export class CatsController {
     description: 'Successfully deleted the cat',
   })
   @ApiResponse({ status: 404, description: 'Cat not found' })
-  async delete(
-    @Param('id', new ParseIntPipe())
-    id: number,
-  ): Promise<void> {
+  async delete(@Param('id', new ParseIntPipe()) id: number): Promise<void> {
+    const cat = await this.catsService.findOne(id); // Добавляем проверку
+    if (!cat) {
+      throw new NotFoundException(`Кошка с id=${id} не найдена`);
+    }
     await this.catsService.remove(id);
   }
 
@@ -114,6 +115,10 @@ export class CatsController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateCatDto: UpdateCatDto,
   ): Promise<Cat> {
+    const cat = await this.catsService.findOne(id); // Проверка существования
+    if (!cat) {
+      throw new NotFoundException(`Кошка с id=${id} не найдена`);
+    }
     return this.catsService.update(id, updateCatDto);
   }
 }

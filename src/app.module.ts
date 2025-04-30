@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CatsModule } from './cats/cats.module';
+import { UsersModule } from './users/users.module';
 import { CoreModule } from './core/core.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from './config';
@@ -21,7 +22,8 @@ import { config } from './config';
       synchronize: config.SYNCHRONIZE_DB,
     }),
     CoreModule,
-    CatsModule
+    CatsModule,
+    UsersModule
   ],
 })
 export class AppModule {}

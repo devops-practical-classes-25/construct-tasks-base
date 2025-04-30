@@ -1,7 +1,7 @@
 import { IsInt, IsString } from 'class-validator';
 import { Cat } from '../interfaces/cat.interface';
 
-export class CreateCatDto  implements Cat{
+export class CreateCatDto implements Cat{
   @IsString()
   readonly name: string;
 
@@ -10,4 +10,7 @@ export class CreateCatDto  implements Cat{
 
   @IsString()
   readonly breed: string;
+
+  @IsInt()
+  readonly ownerId: number;
 }

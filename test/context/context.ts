@@ -1,14 +1,13 @@
 import { INestApplication, Type } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from '../../src/config';
 import { TestContextService } from './context.service';
 import { TestContextModule } from './context.module';
 import { AppModule } from '../../src/app.module';
+import { UserEntity } from '../../src/users/entities/user.entity';
+import { CatEntity } from '../../src/cats/entities/cat.entity';
 
-/**
- * контекст для request тестов
- */
 class TestContext {
   app: INestApplication;
 
@@ -25,26 +24,24 @@ export function createTestContext(metadata: any = {}) {
   const testContext = new TestContext();
   let imports = [AppModule];
   let metadataWithoutImports = {};
-  if (metadata) {
-    const { imports, ...metadataWithoutImports } = metadata;
-  }  
 
   beforeAll(async () => {
     const typeormModule = TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: config.POSTGRES_HOST,
-        port: config.POSTGRES_PORT,
-        username: config.POSTGRES_USER,
-        password: config.POSTGRES_PASSWORD,
-        database: config.TEST_DB,
-        synchronize: true,
-        entities: [__dirname + '/../../src/**/*.entity{.ts,.js}'],
+      type: 'postgres',
+      host: config.POSTGRES_HOST,
+      port: config.POSTGRES_PORT,
+      username: config.POSTGRES_USER,
+      password: config.POSTGRES_PASSWORD,
+      database: config.TEST_DB,
+      synchronize: true,
+      entities: [UserEntity, CatEntity],
     });
 
     const mod = await Test.createTestingModule({
-        imports: [typeormModule, TestContextModule, ...imports],
-        ...metadataWithoutImports,
-      }).compile();
+      imports: [typeormModule, TestContextModule, ...imports],
+      ...metadataWithoutImports,
+    }).compile();
+
     testContext.app = await mod.createNestApplication().init();
     await testContext.contextService.cleanDatabase();
   });
