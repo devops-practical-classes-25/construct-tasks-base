@@ -12,49 +12,40 @@ export class CatsService {
   ) {}
 
   async create(cat: Partial<CatEntity>): Promise<CatEntity> {
-    const existing = await this.catRepository.findOneBy({ name: cat.name });
-    if (existing) {
-      throw new ConflictException(`Кошка с именем "${cat.name}" уже существует.`);
-    }
-    const newCat = this.catRepository.create(cat);
-    return this.catRepository.save(newCat);
+    // TODO: Проверить уникальность по name, age, breed
+    // Если кошка уже существует — выбросить ConflictException
+    // Если нет — создать и сохранить кошку
+    return await this.catRepository.save(this.catRepository.create(cat)); // временно
   }
 
   async findAll(): Promise<CatEntity[]> {
-    return this.catRepository.find();
+    // TODO: Вернуть всех кошек
+    return this.catRepository.find(); // временно
   }
 
   async findOne(id: number): Promise<CatEntity> {
-    const cat = await this.catRepository.findOneBy({ id });
-    if (!cat) {
-      throw new NotFoundException(`Кошка с id=${id} не найдена.`);
-    }
-    return cat;
+    // TODO: Найти кошку по id
+    // Если не найдена — выбросить NotFoundException с нужным сообщением
+    return this.catRepository.findOneBy({ id }); // временно
   }
 
   async remove(id: number): Promise<void> {
-    const cat = await this.findOne(id);
-    await this.catRepository.remove(cat);
+    // TODO: Проверить наличие кошки
+    // Если не найдена — выбросить NotFoundException
+    // Иначе — удалить кошку
+    const cat = await this.findOne(id); // временно
+    await this.catRepository.remove(cat); // временно
   }
 
   async update(id: number, updateDto: UpdateCatDto): Promise<CatEntity> {
-    const cat = await this.findOne(id);
-  
-    if (updateDto.name) {
-      const existingCat = await this.catRepository
-        .createQueryBuilder('cat')
-        .where('LOWER(cat.name) = LOWER(:name)', { name: updateDto.name })
-        .andWhere('cat.id != :id', { id })
-        .getOne();
-  
-      if (existingCat) {
-        throw new ConflictException(`Кошка с именем "${updateDto.name}" уже существует.`);
-      }
-    }
-  
-    Object.assign(cat, updateDto);
-    await this.catRepository.save(cat);
-    
-    return this.catRepository.findOneBy({ id });
+    // TODO:
+    // 1. Проверить, существует ли кошка с таким id
+    // 2. Если имя указано — проверить, нет ли другой кошки с таким же name, age, breed
+    // 3. Если конфликт — выбросить ConflictException
+    // 4. Иначе — обновить кошку и вернуть обновлённый объект
+    const cat = await this.findOne(id); // временно
+    Object.assign(cat, updateDto); // временно
+    await this.catRepository.save(cat); // временно
+    return this.catRepository.findOneBy({ id }); // временно
   }
 }

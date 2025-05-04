@@ -46,7 +46,8 @@ export class CatsController {
     description: 'Conflict - Cat with this name already exists',
   })
   async create(@Body() createCatDto: CreateCatDto): Promise<CatSchema> {
-    return this.catsService.create(createCatDto);
+    // TODO: Реализовать создание кошки с проверкой на уникальность
+    return this.catsService.create(createCatDto); // временно
   }
 
   @Get()
@@ -58,7 +59,8 @@ export class CatsController {
     isArray: true,
   })
   async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
+    // TODO: Реализовать получение всех кошек
+    return this.catsService.findAll(); // временно
   }
 
   @Get(':id')
@@ -71,16 +73,10 @@ export class CatsController {
   })
   @ApiResponse({ status: 404, description: 'Cat not found' })
   async findOne(
-    @Param('id', new ParseIntPipe())
-    id: number,
+    @Param('id', new ParseIntPipe()) id: number,
   ): Promise<Cat> {
-    const cat = await this.catsService.findOne(id);
-
-    if (!cat) {
-      throw new NotFoundException(`Cat with id: ${id} was not found`);
-    }
-
-    return cat; 
+    // TODO: Реализовать поиск кошки по id с обработкой 404
+    return this.catsService.findOne(id); // временно
   }
 
   @Delete(':id')
@@ -93,10 +89,10 @@ export class CatsController {
   })
   @ApiResponse({ status: 404, description: 'Cat not found' })
   async delete(
-    @Param('id', new ParseIntPipe())
-    id: number,
+    @Param('id', new ParseIntPipe()) id: number,
   ): Promise<void> {
-    await this.catsService.remove(id);
+    // TODO: Реализовать удаление кошки по id с обработкой 404
+    await this.catsService.remove(id); // временно
   }
 
   @Patch(':id')
@@ -114,6 +110,7 @@ export class CatsController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateCatDto: UpdateCatDto,
   ): Promise<Cat> {
-    return this.catsService.update(id, updateCatDto);
+    // TODO: Реализовать обновление кошки с частичной валидацией и проверкой на уникальность
+    return this.catsService.update(id, updateCatDto); // временно
   }
 }
