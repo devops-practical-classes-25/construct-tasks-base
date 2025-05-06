@@ -77,7 +77,7 @@ export class CatsController {
     const cat = await this.catsService.findOne(id);
 
     if (!cat) {
-      throw new NotFoundException(`Cat with id: ${id} was not found`);
+      return null; //Ошибка: нет выброса исключения при ненайденной записи
     }
 
     return cat; 
