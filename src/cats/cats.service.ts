@@ -27,7 +27,7 @@ export class CatsService {
   async findOne(id: number): Promise<CatEntity> {
     const cat = await this.catRepository.findOneBy({ id });
     if (!cat) {
-      throw new NotFoundException(`Кошка с id=${id} не найдена.`);
+      return null;
     }
     return cat;
   }
